@@ -1,6 +1,17 @@
-from flask import Flask
+from flask import Flask, jsonify, request
 
 app = Flask(__name__)
+
+def is_prime(n):
+    if n < 2:
+        return False
+    for i in range(2, int(n ** 0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+def get_primes_up_to(n):
+    return [num for num in range(2, n + 1) if is_prime(num)]
 
 @app.route('/')
 def home():
@@ -9,3 +20,20 @@ def home():
 @app.route('/about')
 def about():
     return 'About'
+
+@app.route('/primes')
+def primes():
+    try:
+        limit = request.args.get('limit', type=int)
+        if limit is None:
+            return jsonify({'error': 'Please provide a limit parameter'}), 400
+        if limit < 2:
+            return jsonify({'error': 'Limit must be greater than or equal to 2'}), 400
+        
+        prime_numbers = get_primes_up_to(limit)
+        return jsonify({
+            'limit': limit,
+            'primes': prime_numbers
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
