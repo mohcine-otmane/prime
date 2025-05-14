@@ -8,16 +8,32 @@
         .result { margin-top: 20px; }
         input[type="number"] { padding: 5px; font-size: 16px; }
         button { padding: 5px 15px; font-size: 16px; }
+        
+        .loader {
+            display: none;
+            margin: 20px auto;
+            border: 4px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 4px solid #3498db;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Prime Numbers Generator</h1>
-        <form method="GET">
+        <h1>Prime Numbers Generator</h1>        <form method="GET" id="primeForm">
             <label for="limit">Enter a number:</label>
             <input type="number" id="limit" name="limit" min="2" required>
             <button type="submit">Generate Primes</button>
         </form>
+        <div class="loader" id="loader"></div>
         {% if primes %}
         <div class="result">
             <h3>Prime numbers up to {{ limit }}:</h3>
@@ -25,5 +41,15 @@
         </div>
         {% endif %}
     </div>
+
+    <script>
+        document.getElementById('primeForm').addEventListener('submit', function() {
+            document.getElementById('loader').style.display = 'block';
+            const result = document.querySelector('.result');
+            if (result) {
+                result.style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>
