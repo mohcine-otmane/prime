@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Prime Numbers Generator</title>
+    <title>Prime Finder</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;600;800&display=swap">
     <style>
         :root {
@@ -12,6 +12,28 @@
             --text: #1F2937;
             --text-light: #6B7280;
             --border: #E5E7EB;
+        }        @keyframes floatSymbol {
+            0%, 100% { transform: translateY(0) rotate(0); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+        }
+
+        .math-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.03;
+            font-family: 'Times New Roman', serif;
+        }
+
+        .math-symbol {
+            position: absolute;
+            font-size: 2rem;
+            color: var(--primary);
+            animation: floatSymbol 10s infinite;
         }
 
         body { 
@@ -22,8 +44,11 @@
             color: var(--text);
             min-height: 100vh;
             background-image: 
-                radial-gradient(circle at 100% 0%, rgba(124, 58, 237, 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 0% 100%, rgba(76, 29, 149, 0.05) 0%, transparent 50%);
+                radial-gradient(circle at 100% 0%, rgba(124, 58, 237, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 0% 100%, rgba(76, 29, 149, 0.08) 0%, transparent 50%),
+                linear-gradient(to right, rgba(124, 58, 237, 0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(124, 58, 237, 0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 20px 20px, 20px 20px;
         }
 
         .container { 
@@ -257,6 +282,33 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
+        }        .github-profile {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(76, 29, 149, 0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .github-profile:hover {
+            transform: translateY(-4px) rotate(360deg);
+            box-shadow: 0 8px 24px rgba(76, 29, 149, 0.3);
+        }
+
+        .github-profile svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
         }
 
         @media (max-width: 640px) {
@@ -275,12 +327,24 @@
             h1 {
                 font-size: 2rem;
             }
+
+            .github-profile {
+                bottom: 16px;
+                right: 16px;
+                width: 45px;
+                height: 45px;
+            }
         }
     </style>
 </head>
-<body>
+<body>    <div class="math-bg" id="mathBg"></div>
     <div class="container">
-        <h1>Prime Numbers Generator</h1>
+        <h1>rimes</h1>
+    <a href="https://github.com/mohcine-otmane" class="github-profile" target="_blank" title="Visit my GitHub profile">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+        </svg>
+    </a>
         <form method="GET" id="primeForm">
             <div class="form-group">
                 <input type="number" id="limit" name="limit" min="2" required placeholder="Enter a number ≥ 2">
@@ -297,9 +361,7 @@
             </div>
         </div>
         {% endif %}
-    </div>
-
-    <script>
+    </div>    <script>
         document.getElementById('primeForm').addEventListener('submit', function() {
             document.getElementById('loader').style.display = 'block';
             const result = document.querySelector('.result');
@@ -307,6 +369,32 @@
                 result.style.display = 'none';
             }
         });
+
+        // Create mathematical background
+        const mathSymbols = ['∑', '∏', '√', '∞', 'π', '∫', '∂', 'θ', 'λ', 'φ', '∇', '∆', 'μ', 'α', 'β'];
+        const mathBg = document.getElementById('mathBg');
+        
+        function createSymbol() {
+            const symbol = document.createElement('div');
+            symbol.className = 'math-symbol';
+            symbol.textContent = mathSymbols[Math.floor(Math.random() * mathSymbols.length)];
+            symbol.style.left = Math.random() * 100 + 'vw';
+            symbol.style.top = Math.random() * 100 + 'vh';
+            symbol.style.animationDelay = Math.random() * 10 + 's';
+            symbol.style.opacity = 0.3 + Math.random() * 0.7;
+            symbol.style.fontSize = (2 + Math.random() * 2) + 'rem';
+            mathBg.appendChild(symbol);
+            
+            setTimeout(() => {
+                symbol.remove();
+                createSymbol();
+            }, 20000);
+        }
+
+        // Create initial symbols
+        for(let i = 0; i < 20; i++) {
+            createSymbol();
+        }
     </script>
 </body>
 </html>
