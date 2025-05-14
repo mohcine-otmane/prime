@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prime Numbers Generator</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .result { margin-top: 20px; }
+        input[type="number"] { padding: 5px; font-size: 16px; }
+        button { padding: 5px 15px; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Prime Numbers Generator</h1>
+        <form method="GET">
+            <label for="limit">Enter a number:</label>
+            <input type="number" id="limit" name="limit" min="2" required>
+            <button type="submit">Generate Primes</button>
+        </form>
+        {% if primes %}
+        <div class="result">
+            <h3>Prime numbers up to {{ limit }}:</h3>
+            <p>{{ primes }}</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
