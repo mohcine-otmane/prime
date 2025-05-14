@@ -2,42 +2,299 @@
 <html>
 <head>
     <title>Prime Numbers Generator</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;600;800&display=swap">
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
-        .container { max-width: 600px; margin: 0 auto; }
-        .result { margin-top: 20px; }
-        input[type="number"] { padding: 5px; font-size: 16px; }
-        button { padding: 5px 15px; font-size: 16px; }
+        :root {
+            --primary: #4C1D95;
+            --primary-light: #7C3AED;
+            --bg: #F5F3FF;
+            --surface: #ffffff;
+            --text: #1F2937;
+            --text-light: #6B7280;
+            --border: #E5E7EB;
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 100% 0%, rgba(124, 58, 237, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 0% 100%, rgba(76, 29, 149, 0.05) 0%, transparent 50%);
+        }
+
+        .container { 
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--surface);
+            padding: 48px;
+            border-radius: 24px;
+            box-shadow: 
+                0 4px 6px -1px rgb(0 0 0 / 0.05),
+                0 10px 15px -3px rgb(0 0 0 / 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: "∏";
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            font-size: 200px;
+            opacity: 0.03;
+            font-family: 'Times New Roman', serif;
+            transform: rotate(-15deg);
+        }
+
+        h1 {
+            font-size: 2.75rem;
+            margin-bottom: 2rem;
+            background: linear-gradient(120deg, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+        }
+
+        h1::before {
+            content: "ℙ";
+            margin-right: 0.5rem;
+            font-family: 'Fira Code', monospace;
+            font-weight: 600;
+        }
+
+        .form-group {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 32px;
+            position: relative;
+        }
+
+        input[type="number"] { 
+            flex: 1;
+            padding: 16px 20px;
+            font-size: 1.125rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            outline: none;
+            transition: all 0.3s ease;
+            font-family: 'Fira Code', monospace;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        input[type="number"]::placeholder {
+            color: var(--text-light);
+        }
+
+        input[type="number"]:focus {
+            border-color: var(--primary-light);
+            background: var(--surface);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+
+        button { 
+            padding: 16px 32px;
+            font-size: 1.125rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(76, 29, 149, 0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 50%);
+            transform: scale(0);
+            transition: transform 0.6s;
+        }
+
+        button:hover::after {
+            transform: scale(1);
+        }
+
+        .result { 
+            margin-top: 32px;
+            padding: 32px;
+            background: var(--bg);
+            border-radius: 16px;
+            border: 2px solid rgba(124, 58, 237, 0.1);
+            transition: all 0.3s ease;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .result h3 {
+            margin-top: 0;
+            color: var(--text);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .result h3::before {
+            content: "→";
+            color: var(--primary-light);
+            font-family: 'Fira Code', monospace;
+        }        .result .prime-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 12px;
+            padding: 16px;
+            background: var(--surface);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .prime-number {
+            font-family: 'Fira Code', monospace;
+            font-size: 1.125rem;
+            color: var(--primary);
+            background: var(--bg);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .prime-number:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary-light);
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.1);
+            color: var(--primary-light);
+        }
+
+        .prime-number::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-light), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 0;
+        }
+
+        .prime-number:hover::before {
+            opacity: 0.1;
+        }
+
+        .prime-number span {
+            position: relative;
+            z-index: 1;
+        }
         
         .loader {
             display: none;
-            margin: 20px auto;
-            border: 4px solid #f3f3f3;
+            margin: 40px auto;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
-            border-top: 4px solid #3498db;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
+            position: relative;
+            perspective: 800px;
         }
-        
+
+        .loader::before,
+        .loader::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 4px solid transparent;
+            border-top-color: var(--primary);
+            animation: spin 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+
+        .loader::before {
+            border-top-color: var(--primary);
+            animation-delay: 0s;
+        }
+
+        .loader::after {
+            border-top-color: var(--primary-light);
+            animation-delay: -1s;
+            opacity: 0.6;
+        }
+
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% { transform: rotateX(60deg) rotateZ(0); }
+            100% { transform: rotateX(60deg) rotateZ(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 32px 24px;
+            }
+
+            .form-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Prime Numbers Generator</h1>        <form method="GET" id="primeForm">
-            <label for="limit">Enter a number:</label>
-            <input type="number" id="limit" name="limit" min="2" required>
-            <button type="submit">Generate Primes</button>
+        <h1>Prime Numbers Generator</h1>
+        <form method="GET" id="primeForm">
+            <div class="form-group">
+                <input type="number" id="limit" name="limit" min="2" required placeholder="Enter a number ≥ 2">
+                <button type="submit">Calculate Primes</button>
+            </div>
         </form>
-        <div class="loader" id="loader"></div>
-        {% if primes %}
+        <div class="loader" id="loader"></div>        {% if primes %}
         <div class="result">
-            <h3>Prime numbers up to {{ limit }}:</h3>
-            <p>{{ primes }}</p>
+            <h3>Prime numbers up to {{ limit }}</h3>
+            <div class="prime-grid">
+                {% for prime in primes %}
+                <div class="prime-number"><span>{{ prime }}</span></div>
+                {% endfor %}
+            </div>
         </div>
         {% endif %}
     </div>
