@@ -182,13 +182,46 @@
             display: flex;
             align-items: center;
             gap: 8px;
-        }
-
-        .result h3::before {
+        }        .result h3::before {
             content: "→";
             color: var(--primary-light);
             font-family: 'Fira Code', monospace;
-        }        .result .prime-grid {
+        }
+
+        .continue-section {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 2px solid rgba(124, 58, 237, 0.1);
+            text-align: center;
+        }
+
+        .continue-section p {
+            color: var(--text-light);
+            margin-bottom: 16px;
+            font-size: 0.9rem;
+        }
+
+        .continue-btn {
+            background: var(--primary-light);
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: white;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .continue-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
+        }
+
+        .continue-form {
+            margin: 0;
+        }
+
+        .result .prime-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
             gap: 12px;
@@ -353,12 +386,22 @@
         </form>
         <div class="loader" id="loader"></div>        {% if primes %}
         <div class="result">
-            <h3>Prime numbers up to {{ limit }}</h3>
+            <h3>Prime numbers {% if has_more %}(calculating...){% else %}up to{% endif %} {{ limit }}</h3>
             <div class="prime-grid">
                 {% for prime in primes %}
                 <div class="prime-number"><span>{{ prime }}</span></div>
                 {% endfor %}
             </div>
+            {% if has_more %}
+            <div class="continue-section">
+                <p>Showing primes up to {{ next_start - 1 }}</p>
+                <form method="GET" class="continue-form">
+                    <input type="hidden" name="limit" value="{{ limit }}">
+                    <input type="hidden" name="start_from" value="{{ next_start }}">
+                    <button type="submit" class="continue-btn">Continue Calculation</button>
+                </form>
+            </div>
+            {% endif %}
         </div>
         {% endif %}
     </div>    <script>
