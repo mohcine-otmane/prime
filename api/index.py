@@ -73,6 +73,7 @@ def home():
     limit = request.args.get('limit', type=int)
     start_from = request.args.get('start_from', type=int, default=2)
     primes = None
+    has_more = False
     next_start = None
     
     if limit:
@@ -83,8 +84,8 @@ def home():
     return render_template('index.html', 
                          primes=primes, 
                          limit=limit, 
-                         has_more=has_more if primes else False,
-                         next_start=next_start if primes else None)
+                         has_more=has_more,
+                         next_start=next_start)
 
 @app.route('/about')
 def about():
@@ -99,10 +100,12 @@ def primes():
         if limit < 2:
             return jsonify({'error': 'Limit must be greater than or equal to 2'}), 400
         
-        prime_numbers = get_primes_up_to(limit)
+        primes, has_more, next_start = get_primes_up_to(limit)
         return jsonify({
             'limit': limit,
-            'primes': prime_numbers
+            'primes': primes,
+            'has_more': has_more,
+            'next_start': next_start
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 400

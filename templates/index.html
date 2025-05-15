@@ -394,7 +394,7 @@
             </div>
             {% if has_more %}
             <div class="continue-section">
-                <p>Showing primes up to {{ next_start - 1 }}</p>
+                <p>Still calculating... Click continue to get more prime numbers.</p>
                 <form method="GET" class="continue-form">
                     <input type="hidden" name="limit" value="{{ limit }}">
                     <input type="hidden" name="start_from" value="{{ next_start }}">
