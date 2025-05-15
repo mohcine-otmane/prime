@@ -2,23 +2,35 @@ from flask import Flask, jsonify, request, render_template
 import time
 import json
 import os
+import logging
 
-app = Flask(__name__, template_folder='../templates')
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+app = Flask(__name__, template_folder=os.path.join(os.path.dirname(__file__), '..', 'templates'))
 
 CHUNK_TIME_LIMIT = 2  # seconds
-PRIMES_FILE = 'primes.json'
+PRIMES_FILE = os.path.join(os.path.dirname(__file__), '..', 'primes.json')
 
 def load_primes():
-    if os.path.exists(PRIMES_FILE):
-        with open(PRIMES_FILE, 'r') as f:
-            return json.load(f)
+    try:
+        if os.path.exists(PRIMES_FILE):
+            with open(PRIMES_FILE, 'r') as f:
+                return json.load(f)
+    except (IOError, json.JSONDecodeError) as e:
+        logger.error(f"Error loading primes: {str(e)}")
     return {}
 
 def save_primes(limit, primes):
-    stored_primes = load_primes()
-    stored_primes[str(limit)] = primes
-    with open(PRIMES_FILE, 'w') as f:
-        json.dump(stored_primes, f)
+    try:
+        stored_primes = load_primes()
+        stored_primes[str(limit)] = primes
+        os.makedirs(os.path.dirname(PRIMES_FILE), exist_ok=True)
+        with open(PRIMES_FILE, 'w') as f:
+            json.dump(stored_primes, f)
+    except (IOError, json.JSONDecodeError) as e:
+        logger.error(f"Error saving primes: {str(e)}")
 
 def is_prime(n):
     if n < 2:
@@ -29,6 +41,7 @@ def is_prime(n):
     return True
 
 def get_primes_up_to(n, start_from=2):
+    logger.debug(f"Calculating primes up to {n} starting from {start_from}")
     primes = []
     start_time = time.time()
     
@@ -70,22 +83,26 @@ def get_primes_up_to(n, start_from=2):
 
 @app.route('/')
 def home():
-    limit = request.args.get('limit', type=int)
-    start_from = request.args.get('start_from', type=int, default=2)
-    primes = None
-    has_more = False
-    next_start = None
-    
-    if limit:
-        if limit < 2:
-            return "Please enter a number greater than or equal to 2"
-        primes, has_more, next_start = get_primes_up_to(limit, start_from)
-    
-    return render_template('index.html', 
-                         primes=primes, 
-                         limit=limit, 
-                         has_more=has_more,
-                         next_start=next_start)
+    try:
+        limit = request.args.get('limit', type=int)
+        start_from = request.args.get('start_from', type=int, default=2)
+        primes = None
+        has_more = False
+        next_start = None
+        
+        if limit:
+            if limit < 2:
+                return "Please enter a number greater than or equal to 2"
+            primes, has_more, next_start = get_primes_up_to(limit, start_from)
+        
+        return render_template('index.html', 
+                             primes=primes, 
+                             limit=limit, 
+                             has_more=has_more,
+                             next_start=next_start)
+    except Exception as e:
+        logger.error(f"Error in home route: {str(e)}")
+        return f"An error occurred: {str(e)}", 500
 
 @app.route('/about')
 def about():
